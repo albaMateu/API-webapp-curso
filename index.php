@@ -34,8 +34,37 @@ $app->get("/productos", function() use ($db, $app){
 
 });
 
+//devolver un producto
+$app->get('/producto/:id', function($id) use ($db, $app){
+	//consulta
+	$sql= 'SELECT * FROM productos WHERE id ='.$id;
+	//ejecutar consulta
+	$query= $db ->query($sql);
+
+	$result =array(
+		'status' => 'error',
+		'code' => '404',
+		'message'=> 'Producto no disponible'
+	);
+
+	//comprobar que solo devuelve 1 
+	if($query->num_rows == 1){
+		//recoger resultado
+		$producto = $query->fetch_assoc();
+		$result= array(
+			'status' => 'success',
+			'code' => '200',
+			'data' => $producto
+		);
+
+	}
+
+	echo json_encode($result);
+	
+});
+
 //crea la ruta productos i la funcion insertar
-$app->post('/productos', function () use ($app, $db){
+$app->post('/producto', function () use ($app, $db){
 	//recoge los datos del form en formato json
 	$json= $app->request->post('json');
 	//descodifica json y lo transforma en array
