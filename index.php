@@ -43,7 +43,7 @@ $app->get('/producto/:id', function($id) use ($db, $app){
 
 	$result =array(
 		'status' => 'error',
-		'code' => '404',
+		'code' => 404,
 		'message'=> 'Producto no disponible'
 	);
 
@@ -53,7 +53,7 @@ $app->get('/producto/:id', function($id) use ($db, $app){
 		$producto = $query->fetch_assoc();
 		$result= array(
 			'status' => 'success',
-			'code' => '200',
+			'code' => 200,
 			'data' => $producto
 		);
 
@@ -63,6 +63,69 @@ $app->get('/producto/:id', function($id) use ($db, $app){
 	
 });
 
+//eliminar un producto
+$app->get('/delete-producto/:id', function($id) use ($app, $db){
+	$sql= "DELETE FROM productos WHERE id =".$id;
+	$query=$db->query($sql);
+
+	if($query){
+		$result=array(
+			'status' => 'success',
+			'code' => 200,
+			'message'=> 'Producto eliminado'
+		);
+	}else{
+		$result= array(
+			'status' => 'error',
+			'code' => 404,
+			'message'=> 'Producto no eliminado'
+		);
+
+	}
+
+	echo json_encode($result);
+
+});
+
+//actualizar modificar producto
+$app->post('/update-producto/:id', function ($id) use ($app, $db){
+	//agarre datos del formulari
+	$json= $app->request->post('json');
+
+	//decodifique json en array
+	$data = json_decode($json, true);
+
+	//sql i execució
+	$sql= "UPDATE productos SET ".
+			"nombre = '{$data["nombre"]}',".
+			"descripcion = '{$data["descripcion"]}',".
+			"precio = '{$data["precio"]}' ".
+			"WHERE id = {$id}";
+
+	$query=$db->query($sql);
+
+	if($query){
+		$result=array(
+			'status' => 'success',
+			'code' => 200,
+			'message'=> 'Producto actualizado'
+		);
+	}else{
+		$result= array(
+			'status' => 'error',
+			'code' => 404,
+			'message'=> 'Producto no actualizado'
+		);
+
+	}
+
+	echo json_encode($result);
+
+});
+
+//subir imagen al producto
+
+
 //crea la ruta productos i la funcion insertar
 $app->post('/producto', function () use ($app, $db){
 	//recoge los datos del form en formato json
@@ -70,13 +133,12 @@ $app->post('/producto', function () use ($app, $db){
 	//descodifica json y lo transforma en array
 	$data=  json_decode($json, true);
 
-
 	if(!isset($data['nombre'])){
 		$data['nombre']= null;
 	}
 
-	if(!isset($data['description'])){
-		$data['description']= null;
+	if(!isset($data['descripcion'])){
+		$data['descripcion']= null;
 	}
 
 	if(!isset($data['precio'])){
@@ -89,7 +151,7 @@ $app->post('/producto', function () use ($app, $db){
 	
 	$query="INSERT INTO productos VALUES (NULL,".
 		"'{$data['nombre']}',".
-		"'{$data['description']}',".
+		"'{$data['descripcion']}',".
 		"'{$data['precio']}',".
 		"'{$data['imagen']}'".
 		");";
