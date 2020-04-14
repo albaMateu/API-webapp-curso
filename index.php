@@ -124,7 +124,33 @@ $app->post('/update-producto/:id', function ($id) use ($app, $db){
 });
 
 //subir imagen al producto
+$app->post('/upload-file', function () use ($db, $app){
+	$result= array(
+		'status' => 'error',
+		'code' => 404,
+		'message'=> 'La imagen no ha podido subirse'
+	);
 
+	//_FILES es la variable global que te php per a captar els fitxers del formulari
+	//uploads es com es dirá el input 
+	if(isset($_FILES['uploads'])){
+		//llibreria per a pujar imatges a la carpeta
+		$piramideUploader = new PiramideUploader();
+
+		//nos  permite subir el fichero a nuestra carpeta
+		//upload(prefijo imagen, el name de _FILES, on es guardara, extensions que permet)
+		$upload = $piramideUploader->upload('image', 'uploads','uploads', array('image/jpeg','image/png', 'image/gif'));
+
+		//informacio del fitxer que hem pujat
+		$file = $piramideUploader->getInfoFile();
+		$file_name = $file['complete_name'];
+
+		var_dump($file);
+	}
+
+	echo json_encode($result);
+
+});
 
 //crea la ruta productos i la funcion insertar
 $app->post('/producto', function () use ($app, $db){
