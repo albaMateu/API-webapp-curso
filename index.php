@@ -99,8 +99,13 @@ $app->post('/update-producto/:id', function ($id) use ($app, $db){
 	$sql= "UPDATE productos SET ".
 			"nombre = '{$data["nombre"]}',".
 			"descripcion = '{$data["descripcion"]}',".
-			"precio = '{$data["precio"]}' ".
-			"WHERE id = {$id}";
+			"precio = '{$data["precio"]}'";
+
+	if (isset($data['imagen'])) {
+		$sql .= ", imagen = '{$data["imagen"]}'";
+	}
+
+	$sql .=	" WHERE id = {$id}";
 
 	$query=$db->query($sql);
 
@@ -145,7 +150,23 @@ $app->post('/upload-file', function () use ($db, $app){
 		$file = $piramideUploader->getInfoFile();
 		$file_name = $file['complete_name'];
 
-		var_dump($file);
+	 	//si existeiix upload pero no  s'ha pujat be uploaded	false
+		if(isset($upload) && $upload["uploaded"] == false){
+			$result= array(
+				'status' => 'error',
+				'code' => 404,
+				'message'=> 'La imagen no ha podido subirse'
+			);
+
+		}else{
+			$result= array(
+				'status' => 'success',
+				'code' => 200,
+				'message'=> 'La imagen se ha subido',
+				'filename' => $file_name
+			);
+		}
+
 	}
 
 	echo json_encode($result);
