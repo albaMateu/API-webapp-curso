@@ -7,6 +7,17 @@ $app = new \Slim\Slim();
 //conexio a la base de dades
 $db= new mysqli("localhost","root","","curso_angular4");
 
+//configuracio cabeceras http
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+$method = $_SERVER['REQUEST_METHOD'];
+if($method == "OPTIONS") {
+    die();
+}
+
+
 //el metodo get nos permite crear una ruta por get(crea la ruta /pruebas http://localhost/curso-angular4-backend/index.php/pruebas)
 //el metodo use nos permite usar dentro del metodo variables que hay fuera, en este caso, la vaariable app
 $app->get("/pruebas", function() use ($app){
